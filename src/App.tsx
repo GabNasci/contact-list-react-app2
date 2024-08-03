@@ -1,25 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
+import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
+import { ContactInterface, Type, Option } from './interface/ContactInterface';
+import ContactController from './controller/ContactController';
+import { Dialog } from 'primereact/dialog';
+import { contactSchema, ContactSchemaType } from './Schema/ContactSchema';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputMask } from 'primereact/inputmask';
-import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
-import { z } from "zod"
-import { ContactInterface, Type, Option } from './interface/ContactInterface';
-import ContactController from './controller/ContactController';
 
 
-const phoneRegex: RegExp = /^\(\d{2}\) \d{5}-\d{4}$/
 
-const contactSchema = z.object({
-  name: z.string(),
-  phone: z.string().regex(phoneRegex, { message: "must be (XX)XXXXX-XXXX" }),
-  email: z.string().email(),
-  address: z.string(),
-  note: z.string(),
-  type: z.string()
-})
 
-export type ContactSchemaType = z.infer<typeof contactSchema>
 
 function App() {
   const [contacts, setContacts] = useState<Array<ContactInterface>>([
@@ -71,21 +62,37 @@ function App() {
   ])
   const [showingContacts, setShowingContacts] = useState<Array<ContactInterface>>(contacts)
   const [searchInput, setSearchInput] = useState<string>("")
-  const [option, setOption] = useState<string>(Option.Name)
+  const [option, setOption] = useState<string>(Option.Name) 
   const [filter, setFilter] = useState<string>(Type.All)
-
+  const [editVisible, setEditVisible] = useState<boolean>(false);
+  const [selectedContact, setSelectedContact] = useState<ContactInterface>({
+    id: 5,
+    name: "Eve Green",
+    phone: "(51) 98765-4321",
+    email: "eve.green@example.com",
+    address: "654 Cedar St, Hilltop",
+    note: "Precisa de suporte técnico",
+    type: "Personal"
+  });
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<ContactInterface>({
     resolver: zodResolver(contactSchema)
   })
+  const {reset: resetEdit, control: controlEdit, register: registerEdit, handleSubmit: handleEdit, formState: { errors: errorsEdit } } = useForm<ContactInterface>({
+    resolver: zodResolver(contactSchema)
+  })
+
+
+  const handleEditClick = (contact: ContactInterface) => {
+    setSelectedContact(contact);
+    resetEdit(contact)
+    setEditVisible(true);
+  };
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const updatedContacts = ContactController.deleteContact(contacts, e.button.valueOf());
-    setContacts(updatedContacts);
-    const updatedShowingContacts = ContactController.searchContact(updatedContacts, option, searchInput, filter);
-    setShowingContacts(updatedShowingContacts);
-    console.log(contacts)
-    
+    const newArray = ContactController.deleteContact(contacts, parseInt(e.currentTarget.value))
+    setContacts(newArray)
+    setShowingContacts(ContactController.searchContact(newArray, option, searchInput, filter))
   }
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -108,86 +115,90 @@ function App() {
     setShowingContacts(ContactController.searchContact(contacts, option, searchInput, filter))
   }
 
-  const handleForm = (data: ContactSchemaType) => {
+  const handleCreateForm = (data: ContactSchemaType) => {
     if (ContactController.findDuplicate(contacts, data)) return alert('Contato já existe!')
-    ContactController.createContact(contacts, data)
+    setContacts(ContactController.createContact(contacts, data))
     setShowingContacts(contacts)
-    console.log(contacts)
   }
 
-  // const handleDelete = (id: number) => {
-  //   // Remove o contato da lista de contatos
-  //   const updatedContacts = ContactController.deleteContact(contacts, id);
-  //   setContacts(updatedContacts); // Atualiza o estado de contatos
-  
-  //   // Atualiza a lista de contatos mostrados
-  //   setShowingContacts(
-  //     ContactController.searchContact(updatedContacts, option, searchInput, filter)
-  //   );
-  // };
 
+  const handleEditForm = (data: ContactSchemaType) => {
+    if (ContactController.findDuplicateEdit(contacts, data, selectedContact?.id)) return alert('Contato já existe!')
+    console.log(ContactController.updateContact(contacts, data, selectedContact.id))
+  }
+
+  const closeEditForm = () => {
+    setEditVisible(false)
+    resetEdit({
+      name: "",
+      phone: "",
+      email: "",
+      address: "",
+      note: "",
+      type: ""
+    })
+    
+  }
 
   return (
     <div>
-      <form autoComplete="off" onSubmit={handleSubmit(handleForm)} >
-        <div>
-          <h1>Criação de Contato</h1>
-        </div>
-        <div>
+      <div>
+        <h1>Criação de Contatos</h1>
+      </div>
+        <form autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
           <div>
             <div>
-              <label htmlFor="name">Name: <span>*</span></label>
-              <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
-              {errors.name && <p >{errors.name.message}</p>}
+              <div>
+                <label htmlFor="name">Name: <span>*</span></label>
+                <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
+                {errors.name && <p >{errors.name.message}</p>}
+              </div>
+              <div >
+                <label htmlFor="phone">Phone: <span>*</span></label>
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => (
+                    <InputMask
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      mask="(99) 99999-9999"
+                      placeholder="(99) 99999-9999"
+                    />
+                  )}
+                />
+                {errors.phone && <p >{errors.phone.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
+                <input type="email" {...register('email')} id="email" placeholder="write your email correctly." />
+                {errors.email && <p >{errors.email.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="address">Address: </label>
+                <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
+                {errors.address && <p >{errors.address.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="note">Note: </label>
+                <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
+                {errors.note && <p >{errors.note.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="note">Type: </label>
+                <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
+                  <option value="Personal">Personal</option>
+                  <option value="Professional">Professional</option>
+                </select>
+                {errors.note && <p >{errors.note.message}</p>}
+              </div>
             </div>
             <div >
-              <label htmlFor="phone">Phone: <span>*</span></label>
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <InputMask
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.value)}
-                    mask="(99) 99999-9999"
-                    placeholder="(99) 99999-9999"
-                  />
-                )}
-              />
-              {errors.phone && <p >{errors.phone.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
-              <input type="email" {...register('email')} id="email" placeholder="write your email correctly." />
-              {errors.email && <p >{errors.email.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="address">Address: </label>
-              <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
-              {errors.address && <p >{errors.address.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="note">Note: </label>
-              <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
-              {errors.note && <p >{errors.note.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="note">Type: </label>
-              <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
-                <option value="Personal">Personal</option>
-                <option value="Professional">Professional</option>
-              </select>
-              {errors.note && <p >{errors.note.message}</p>}
+              <button type="submit">Submit</button>
             </div>
           </div>
-          <div >
-            <button type="submit">Submit</button>
-          </div>
-        </div>
-      </form>
-      <div>
-        <h1>Lista de Contatos</h1>
-      </div>
+        </form>
+
       <form >
         <div >
           <label htmlFor="option">Buscar por:</label>
@@ -205,22 +216,92 @@ function App() {
         </div>
       </form>
       <div style={{ display: "flex", gap: "4px" }}>
-          <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
-          <label htmlFor="todos">Todos</label>
+        <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
+        <label htmlFor="todos">Todos</label>
 
-          <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
-          <label htmlFor="personal">Pessoal</label>
+        <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
+        <label htmlFor="personal">Pessoal</label>
 
-          <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
-          <label htmlFor="professional">Profissional</label>
-        </div>
+        <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
+        <label htmlFor="professional">Profissional</label>
+      </div>
 
       <div>
         {showingContacts.length ?
-          showingContacts.map((item, key) => (
-            <div key={key}><br />{item.name}, {item.type}, {item.phone}, {item.email} <button value={key} onClick={handleDelete}>X</button><br /></div>
+          showingContacts.map((item) => (
+            <div key={item.id}>
+              <br />{item.name}, {item.type}, {item.phone}, {item.email}
+              <button onClick={() => handleEditClick(item)}>Editar</button>
+              <button value={item.id} onClick={handleDelete}>X</button><br />
+            </div>
           )) : <p>Nenhum contato encontrado.</p>
         }
+
+        {selectedContact && (
+          <Dialog
+            header={selectedContact.name}
+            visible={editVisible}
+            style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff"}}
+            onHide={closeEditForm}
+          >
+            <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
+              <div>
+                <input type="hidden" value={selectedContact.id} name='id' />
+                <div>
+                  <div>
+                    <label htmlFor="name">Name: <span>*</span></label>
+                    <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="write your name correctly." />
+                    {errorsEdit.name && <p >{errorsEdit.name.message}</p>}
+                  </div>
+                  <div >
+                    <label htmlFor="phone">Phone: <span>*</span></label>
+                    <Controller
+                      name="phone"
+                      control={controlEdit}
+                      defaultValue={selectedContact.phone}
+                      render={({ field }) => (
+                        <InputMask
+                          
+                          value={field.value}
+                          onChange={(e) => field.onChange(e.value)}
+                          mask="(99) 99999-9999"
+                          placeholder="(99) 99999-9999"
+                        />
+                      )}
+                    />
+                    {errorsEdit.phone && <p >{errorsEdit.phone.message}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
+                    <input defaultValue={selectedContact.email} type="email" {...registerEdit('email')} id="email" placeholder="write your email correctly." />
+                    {errorsEdit.email && <p >{errorsEdit.email.message}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="address">Address: </label>
+                    <input defaultValue={selectedContact.address} type="text" {...registerEdit('address')} id="address" placeholder="write your address correctly." />
+                    {errorsEdit.address && <p >{errorsEdit.address.message}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="note">Note: </label>
+                    <input defaultValue={selectedContact.note} type="text" {...registerEdit('note')} id="note" placeholder="write your note correctly." />
+                    {errorsEdit.note && <p >{errorsEdit.note.message}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="note">Type: </label>
+                    <select defaultValue={selectedContact.type} {...registerEdit('type')} name="type" id="type">
+                      <option value="Personal">Personal</option>
+                      <option value="Professional">Professional</option>
+                    </select>
+                    {errorsEdit.type && <p >{errorsEdit.type.message}</p>}
+                  </div>
+                </div>
+                <div >
+                  <button type="submit">Submit</button>
+                </div>
+              </div>
+            </form>
+          </Dialog>
+        )}
       </div>
     </div>
 

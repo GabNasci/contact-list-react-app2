@@ -1,5 +1,5 @@
 import { ContactInterface, Type, Option } from "../interface/ContactInterface";
-import { ContactSchemaType } from "../App";
+import { ContactSchemaType } from "../Schema/ContactSchema";
 
 function findDuplicate(contacts: Array<ContactInterface>, contact: ContactSchemaType): boolean {
     return contacts.some((item) => {
@@ -7,6 +7,14 @@ function findDuplicate(contacts: Array<ContactInterface>, contact: ContactSchema
         return (item.email === contact.email && item.phone === contact.phone)
     } )
 }
+
+function findDuplicateEdit(contacts: Array<ContactInterface>, contact: ContactSchemaType, id: number | undefined): boolean {
+    return contacts.some((item) => {
+        if(item.id === id) return false
+        return (item.email === contact.email || item.phone === contact.phone)
+    } )
+}
+
 
 function findByName(contacts: Array<ContactInterface>, search: string): Array<ContactInterface> {
     if(search.length > 0) return contacts.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
@@ -43,9 +51,13 @@ function searchContact( contacts: Array<ContactInterface>, field: string, search
 }
 
 function deleteContact(contacts: Array<ContactInterface>, id: number): Array<ContactInterface> {
-    const newArray: Array<ContactInterface> = contacts
-    newArray.splice(id, 1)
+    const newArray: Array<ContactInterface> = contacts.filter((item) => item.id !== id)
     return newArray
+}
+
+function updateContact(contacts: Array<ContactInterface>, contact: ContactSchemaType, id: number): Array<ContactInterface>{
+    const newArray: Array<ContactInterface> = contacts
+    return newArray.splice(id-1, 1, {id: id, ...contact})
 }
 
 export default {
@@ -53,5 +65,7 @@ export default {
     findDuplicate,
     searchContact,
     filterByType,
-    deleteContact
+    deleteContact,
+    findDuplicateEdit,
+    updateContact
 }
