@@ -57,7 +57,11 @@ function deleteContact(contacts: Array<ContactInterface>, id: number): Array<Con
 
 function updateContact(contacts: Array<ContactInterface>, contact: ContactSchemaType, id: number): Array<ContactInterface>{
     const newArray: Array<ContactInterface> = contacts
-    return newArray.splice(id-1, 1, {id: id, ...contact})
+    return newArray.splice(findIndex(contacts, id), 1, {id: id, ...contact})
+}
+
+function findIndex(contacts: Array<ContactInterface>, id: number): number {
+    return contacts.findIndex((item) => item.id === id)
 }
 
 export default {
