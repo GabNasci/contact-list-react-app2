@@ -80,9 +80,11 @@ function App() {
   })
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(ContactController.deleteContact(contacts, e.button.valueOf()))
-    setContacts(ContactController.searchContact(contacts, option, searchInput, filter))
-    setShowingContacts(ContactController.searchContact(contacts, option, searchInput, filter))
+    const updatedContacts = ContactController.deleteContact(contacts, e.button.valueOf());
+    setContacts(updatedContacts);
+    const updatedShowingContacts = ContactController.searchContact(updatedContacts, option, searchInput, filter);
+    setShowingContacts(updatedShowingContacts);
+    console.log(contacts)
     
   }
 
@@ -112,6 +114,18 @@ function App() {
     setShowingContacts(contacts)
     console.log(contacts)
   }
+
+  // const handleDelete = (id: number) => {
+  //   // Remove o contato da lista de contatos
+  //   const updatedContacts = ContactController.deleteContact(contacts, id);
+  //   setContacts(updatedContacts); // Atualiza o estado de contatos
+  
+  //   // Atualiza a lista de contatos mostrados
+  //   setShowingContacts(
+  //     ContactController.searchContact(updatedContacts, option, searchInput, filter)
+  //   );
+  // };
+
 
   return (
     <div>
