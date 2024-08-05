@@ -7,8 +7,7 @@ import { contactSchema, ContactSchemaType } from './Schema/ContactSchema';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputMask } from 'primereact/inputmask';
-
-
+import styles from "../src/assets/app.module.css"
 
 
 
@@ -58,8 +57,81 @@ function App() {
       address: "654 Cedar St, Hilltop",
       note: "Precisa de suporte técnico",
       type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
+    },
+    {
+      id: 5,
+      name: "Eve Green",
+      phone: "(51) 98765-4321",
+      email: "eve.green@example.com",
+      address: "654 Cedar St, Hilltop",
+      note: "Precisa de suporte técnico",
+      type: "Personal"
     }
   ])
+
   const [showingContacts, setShowingContacts] = useState<Array<ContactInterface>>(contacts)
   const [searchInput, setSearchInput] = useState<string>("")
   const [option, setOption] = useState<string>(Option.Name)
@@ -141,12 +213,10 @@ function App() {
   }
 
   return (
-    <div>
-      <div>
+    <div className={styles.container}>
+      <section className={styles.container_create}>
         <h1>Criação de Contatos</h1>
-      </div>
-      <form autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
-        <div>
+        <form className={styles.form_container} autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
           <div>
             <div>
               <label htmlFor="name">Name: <span>*</span></label>
@@ -196,114 +266,118 @@ function App() {
           <div >
             <button type="submit">Submit</button>
           </div>
+        </form>
+
+      </section>
+      <section className={styles.container_search}>
+        <h1>Busca</h1>
+        <form >
+          <div >
+            <label htmlFor="option">Buscar por:</label>
+            <select onChange={handleSelect} value={option} name="option" id="option">
+              <option value={Option.Name}>Nome</option>
+              <option value={Option.Email}>Email</option>
+              <option value={Option.Phone}>Telefone</option>
+            </select>
+          </div>
+          <div >
+            <input value={searchInput} onChange={handleInputSearch} type="search" name="search" id="search" placeholder="Busque aqui" />
+          </div>
+          <div>
+            <button onClick={handleSearch} type="submit">Buscar</button>
+          </div>
+        </form>
+        <div style={{ display: "flex", gap: "4px" }}>
+          <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
+          <label htmlFor="todos">Todos</label>
+
+          <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
+          <label htmlFor="personal">Pessoal</label>
+
+          <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
+          <label htmlFor="professional">Profissional</label>
         </div>
-      </form>
 
-      <h1>Busca</h1>
-      <form >
-        <div >
-          <label htmlFor="option">Buscar por:</label>
-          <select onChange={handleSelect} value={option} name="option" id="option">
-            <option value={Option.Name}>Nome</option>
-            <option value={Option.Email}>Email</option>
-            <option value={Option.Phone}>Telefone</option>
-          </select>
-        </div>
-        <div >
-          <input value={searchInput} onChange={handleInputSearch} type="search" name="search" id="search" placeholder="Busque aqui" />
-        </div>
-        <div>
-          <button onClick={handleSearch} type="submit">Buscar</button>
-        </div>
-      </form>
-      <div style={{ display: "flex", gap: "4px" }}>
-        <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
-        <label htmlFor="todos">Todos</label>
+        <div className={styles.results_container}>
+          {showingContacts.length ?
+            showingContacts.map((item) => (
+              <div key={item.id}>
+                <br />{item.name}, {item.type}, {item.phone}, {item.email}
+                <button onClick={() => handleEditClick(item)}>Editar</button>
+                <button value={item.id} onClick={handleDelete}>X</button><br />
+              </div>
+            )) : <p>Nenhum contato encontrado.</p>
+          }
 
-        <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
-        <label htmlFor="personal">Pessoal</label>
-
-        <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
-        <label htmlFor="professional">Profissional</label>
-      </div>
-
-      <div>
-        {showingContacts.length ?
-          showingContacts.map((item) => (
-            <div key={item.id}>
-              <br />{item.name}, {item.type}, {item.phone}, {item.email}
-              <button onClick={() => handleEditClick(item)}>Editar</button>
-              <button value={item.id} onClick={handleDelete}>X</button><br />
-            </div>
-          )) : <p>Nenhum contato encontrado.</p>
-        }
-
-        {selectedContact && (
-          <Dialog
-            header={selectedContact.name}
-            visible={editVisible}
-            style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff" }}
-            onHide={closeEditForm}
-          >
-            <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
-              <div>
-                <input type="hidden" value={selectedContact.id} name='id' />
+          {selectedContact && (
+            <Dialog
+              header={selectedContact.name}
+              visible={editVisible}
+              style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff" }}
+              onHide={closeEditForm}
+            >
+              <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
                 <div>
+                  <input type="hidden" value={selectedContact.id} name='id' />
                   <div>
-                    <label htmlFor="name">Name: <span>*</span></label>
-                    <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="write your name correctly." />
-                    {errorsEdit.name && <p >{errorsEdit.name.message}</p>}
+                    <div>
+                      <label htmlFor="name">Name: <span>*</span></label>
+                      <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="write your name correctly." />
+                      {errorsEdit.name && <p >{errorsEdit.name.message}</p>}
+                    </div>
+                    <div >
+                      <label htmlFor="phone">Phone: <span>*</span></label>
+                      <Controller
+                        name="phone"
+                        control={controlEdit}
+                        defaultValue={selectedContact.phone}
+                        render={({ field }) => (
+                          <InputMask
+
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.value)}
+                            mask="(99) 99999-9999"
+                            placeholder="(99) 99999-9999"
+                          />
+                        )}
+                      />
+                      {errorsEdit.phone && <p >{errorsEdit.phone.message}</p>}
+                    </div>
+                    <div>
+                      <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
+                      <input defaultValue={selectedContact.email} type="email" {...registerEdit('email')} id="email" placeholder="write your email correctly." />
+                      {errorsEdit.email && <p >{errorsEdit.email.message}</p>}
+                    </div>
+                    <div>
+                      <label htmlFor="address">Address: </label>
+                      <input defaultValue={selectedContact.address} type="text" {...registerEdit('address')} id="address" placeholder="write your address correctly." />
+                      {errorsEdit.address && <p >{errorsEdit.address.message}</p>}
+                    </div>
+                    <div>
+                      <label htmlFor="note">Note: </label>
+                      <input defaultValue={selectedContact.note} type="text" {...registerEdit('note')} id="note" placeholder="write your note correctly." />
+                      {errorsEdit.note && <p >{errorsEdit.note.message}</p>}
+                    </div>
+                    <div>
+                      <label htmlFor="note">Type: </label>
+                      <select defaultValue={selectedContact.type} {...registerEdit('type')} name="type" id="type">
+                        <option value="Personal">Personal</option>
+                        <option value="Professional">Professional</option>
+                      </select>
+                      {errorsEdit.type && <p >{errorsEdit.type.message}</p>}
+                    </div>
                   </div>
                   <div >
-                    <label htmlFor="phone">Phone: <span>*</span></label>
-                    <Controller
-                      name="phone"
-                      control={controlEdit}
-                      defaultValue={selectedContact.phone}
-                      render={({ field }) => (
-                        <InputMask
+                    <button type="submit">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </Dialog>
+          )}
+        </div>
+      </section>
 
-                          value={field.value}
-                          onChange={(e) => field.onChange(e.value)}
-                          mask="(99) 99999-9999"
-                          placeholder="(99) 99999-9999"
-                        />
-                      )}
-                    />
-                    {errorsEdit.phone && <p >{errorsEdit.phone.message}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
-                    <input defaultValue={selectedContact.email} type="email" {...registerEdit('email')} id="email" placeholder="write your email correctly." />
-                    {errorsEdit.email && <p >{errorsEdit.email.message}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="address">Address: </label>
-                    <input defaultValue={selectedContact.address} type="text" {...registerEdit('address')} id="address" placeholder="write your address correctly." />
-                    {errorsEdit.address && <p >{errorsEdit.address.message}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="note">Note: </label>
-                    <input defaultValue={selectedContact.note} type="text" {...registerEdit('note')} id="note" placeholder="write your note correctly." />
-                    {errorsEdit.note && <p >{errorsEdit.note.message}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="note">Type: </label>
-                    <select defaultValue={selectedContact.type} {...registerEdit('type')} name="type" id="type">
-                      <option value="Personal">Personal</option>
-                      <option value="Professional">Professional</option>
-                    </select>
-                    {errorsEdit.type && <p >{errorsEdit.type.message}</p>}
-                  </div>
-                </div>
-                <div >
-                  <button type="submit">Submit</button>
-                </div>
-              </div>
-            </form>
-          </Dialog>
-        )}
-      </div>
+
     </div>
 
   )
