@@ -282,21 +282,20 @@ function App() {
           </div>
           <div >
             <input value={searchInput} onChange={handleInputSearch} type="search" name="search" id="search" placeholder="Busque aqui" />
-          </div>
-          <div>
             <button onClick={handleSearch} type="submit">Buscar</button>
           </div>
+          <div style={{ display: "flex", gap: "4px" }}>
+            <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
+            <label htmlFor="todos">Todos</label>
+
+            <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
+            <label htmlFor="personal">Pessoal</label>
+
+            <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
+            <label htmlFor="professional">Profissional</label>
+          </div>
         </form>
-        <div style={{ display: "flex", gap: "4px" }}>
-          <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
-          <label htmlFor="todos">Todos</label>
 
-          <RadioButton id='personal' value={Type.Personal} onChange={handleFilter} checked={filter === Type.Personal} />
-          <label htmlFor="personal">Pessoal</label>
-
-          <RadioButton id='professional' value={Type.Professional} onChange={handleFilter} checked={filter === Type.Professional} />
-          <label htmlFor="professional">Profissional</label>
-        </div>
 
         <div className={styles.results_container}>
           {showingContacts.length ?
