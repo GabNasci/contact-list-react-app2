@@ -62,7 +62,7 @@ function App() {
   ])
   const [showingContacts, setShowingContacts] = useState<Array<ContactInterface>>(contacts)
   const [searchInput, setSearchInput] = useState<string>("")
-  const [option, setOption] = useState<string>(Option.Name) 
+  const [option, setOption] = useState<string>(Option.Name)
   const [filter, setFilter] = useState<string>(Type.All)
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [selectedContact, setSelectedContact] = useState<ContactInterface>({
@@ -78,7 +78,7 @@ function App() {
   const { control, register, handleSubmit, formState: { errors } } = useForm<ContactInterface>({
     resolver: zodResolver(contactSchema)
   })
-  const {reset: resetEdit, control: controlEdit, register: registerEdit, handleSubmit: handleEdit, formState: { errors: errorsEdit } } = useForm<ContactInterface>({
+  const { reset: resetEdit, control: controlEdit, register: registerEdit, handleSubmit: handleEdit, formState: { errors: errorsEdit } } = useForm<ContactInterface>({
     resolver: zodResolver(contactSchema)
   })
 
@@ -137,7 +137,7 @@ function App() {
       note: "",
       type: ""
     })
-    
+
   }
 
   return (
@@ -145,60 +145,61 @@ function App() {
       <div>
         <h1>Criação de Contatos</h1>
       </div>
-        <form autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
+      <form autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
+        <div>
           <div>
             <div>
-              <div>
-                <label htmlFor="name">Name: <span>*</span></label>
-                <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
-                {errors.name && <p >{errors.name.message}</p>}
-              </div>
-              <div >
-                <label htmlFor="phone">Phone: <span>*</span></label>
-                <Controller
-                  name="phone"
-                  control={control}
-                  render={({ field }) => (
-                    <InputMask
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.value)}
-                      mask="(99) 99999-9999"
-                      placeholder="(99) 99999-9999"
-                    />
-                  )}
-                />
-                {errors.phone && <p >{errors.phone.message}</p>}
-              </div>
-              <div>
-                <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
-                <input type="email" {...register('email')} id="email" placeholder="write your email correctly." />
-                {errors.email && <p >{errors.email.message}</p>}
-              </div>
-              <div>
-                <label htmlFor="address">Address: </label>
-                <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
-                {errors.address && <p >{errors.address.message}</p>}
-              </div>
-              <div>
-                <label htmlFor="note">Note: </label>
-                <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
-                {errors.note && <p >{errors.note.message}</p>}
-              </div>
-              <div>
-                <label htmlFor="note">Type: </label>
-                <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
-                  <option value="Personal">Personal</option>
-                  <option value="Professional">Professional</option>
-                </select>
-                {errors.note && <p >{errors.note.message}</p>}
-              </div>
+              <label htmlFor="name">Name: <span>*</span></label>
+              <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
+              {errors.name && <p >{errors.name.message}</p>}
             </div>
             <div >
-              <button type="submit">Submit</button>
+              <label htmlFor="phone">Phone: <span>*</span></label>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <InputMask
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    mask="(99) 99999-9999"
+                    placeholder="(99) 99999-9999"
+                  />
+                )}
+              />
+              {errors.phone && <p >{errors.phone.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
+              <input type="email" {...register('email')} id="email" placeholder="write your email correctly." />
+              {errors.email && <p >{errors.email.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="address">Address: </label>
+              <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
+              {errors.address && <p >{errors.address.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="note">Note: </label>
+              <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
+              {errors.note && <p >{errors.note.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="note">Type: </label>
+              <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
+                <option value="Personal">Personal</option>
+                <option value="Professional">Professional</option>
+              </select>
+              {errors.note && <p >{errors.note.message}</p>}
             </div>
           </div>
-        </form>
+          <div >
+            <button type="submit">Submit</button>
+          </div>
+        </div>
+      </form>
 
+      <h1>Busca</h1>
       <form >
         <div >
           <label htmlFor="option">Buscar por:</label>
@@ -241,7 +242,7 @@ function App() {
           <Dialog
             header={selectedContact.name}
             visible={editVisible}
-            style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff"}}
+            style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff" }}
             onHide={closeEditForm}
           >
             <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
@@ -261,7 +262,7 @@ function App() {
                       defaultValue={selectedContact.phone}
                       render={({ field }) => (
                         <InputMask
-                          
+
                           value={field.value}
                           onChange={(e) => field.onChange(e.value)}
                           mask="(99) 99999-9999"
