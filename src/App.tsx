@@ -137,15 +137,7 @@ function App() {
   const [option, setOption] = useState<string>(Option.Name)
   const [filter, setFilter] = useState<string>(Type.All)
   const [editVisible, setEditVisible] = useState<boolean>(false);
-  const [selectedContact, setSelectedContact] = useState<ContactInterface>({
-    id: 5,
-    name: "Eve Green",
-    phone: "(51) 98765-4321",
-    email: "eve.green@example.com",
-    address: "654 Cedar St, Hilltop",
-    note: "Precisa de suporte técnico",
-    type: "Personal"
-  });
+  const [selectedContact, setSelectedContact] = useState<ContactInterface>();
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<ContactInterface>({
     resolver: zodResolver(contactSchema)
@@ -217,14 +209,14 @@ function App() {
       <section className={styles.container_create}>
         <h1>Criação de Contatos</h1>
         <form className={styles.form_container} autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
-          <div>
+          <div className={styles.form_body}>
             <div>
-              <label htmlFor="name">Name: <span>*</span></label>
+              <label htmlFor="name">Nome: <span>*</span></label>
               <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
               {errors.name && <p >{errors.name.message}</p>}
             </div>
             <div >
-              <label htmlFor="phone">Phone: <span>*</span></label>
+              <label htmlFor="phone">Telefone: <span>*</span></label>
               <Controller
                 name="phone"
                 control={control}
@@ -245,17 +237,17 @@ function App() {
               {errors.email && <p >{errors.email.message}</p>}
             </div>
             <div>
-              <label htmlFor="address">Address: </label>
+              <label htmlFor="address">Endereço: </label>
               <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
               {errors.address && <p >{errors.address.message}</p>}
             </div>
             <div>
-              <label htmlFor="note">Note: </label>
+              <label htmlFor="note">Notas: </label>
               <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
               {errors.note && <p >{errors.note.message}</p>}
             </div>
             <div>
-              <label htmlFor="note">Type: </label>
+              <label htmlFor="note">Tipo: </label>
               <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
                 <option value="Personal">Personal</option>
                 <option value="Professional">Professional</option>
@@ -264,7 +256,7 @@ function App() {
             </div>
           </div>
           <div >
-            <button type="submit">Submit</button>
+            <button type="submit">Adicionar Contato</button>
           </div>
         </form>
 
@@ -300,12 +292,14 @@ function App() {
         <div className={styles.results_container}>
           {showingContacts.length ?
             showingContacts.map((item) => (
-              <div key={item.id}>
+              <div className={styles.contact_card} key={item.id}>
                 <p>{item.name}</p>
                 <p>{item.phone}</p>
                 <p>{item.type}</p>
-                <button onClick={() => handleEditClick(item)}>Editar</button>
-                <button value={item.id} onClick={handleDelete}>X</button><br />
+                <div>
+                  <button className={styles.edit_button} onClick={() => handleEditClick(item)}>Editar</button>
+                  <button className={styles.delete_button} value={item.id} onClick={handleDelete}>X</button>
+                </div>
               </div>
             )) : <p>Nenhum contato encontrado.</p>
           }
@@ -334,7 +328,6 @@ function App() {
                         defaultValue={selectedContact.phone}
                         render={({ field }) => (
                           <InputMask
-
                             value={field.value}
                             onChange={(e) => field.onChange(e.value)}
                             mask="(99) 99999-9999"
