@@ -284,7 +284,7 @@ function App() {
             <input value={searchInput} onChange={handleInputSearch} type="search" name="search" id="search" placeholder="Busque aqui" />
             <button onClick={handleSearch} type="submit">Buscar</button>
           </div>
-          <div style={{ display: "flex", gap: "4px" }}>
+          <div className={styles.filter}>
             <RadioButton id='todos' value={Type.All} onChange={handleFilter} checked={filter === Type.All} />
             <label htmlFor="todos">Todos</label>
 
@@ -301,7 +301,9 @@ function App() {
           {showingContacts.length ?
             showingContacts.map((item) => (
               <div key={item.id}>
-                <br />{item.name}, {item.type}, {item.phone}, {item.email}
+                <p>{item.name}</p>
+                <p>{item.phone}</p>
+                <p>{item.type}</p>
                 <button onClick={() => handleEditClick(item)}>Editar</button>
                 <button value={item.id} onClick={handleDelete}>X</button><br />
               </div>

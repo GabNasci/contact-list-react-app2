@@ -1,11 +1,11 @@
 .container {
     display: flex;
     margin: 0;
-    height: 100vh;
     width: 100%;
     padding: 0;
     gap: 16px;
     overflow: hidden;
+    align-items: start ;
 }
 
 .container_create {
@@ -13,11 +13,12 @@
     padding: 8px 24px;
     border-radius: 16px;
     height: 100%;
-    & h1 {
-        margin: 8px 0;
-    }
     overflow-y: auto;
     flex: 1;
+    & h1 {
+        margin:0;
+    }
+    
 }
 
 .container_search {
@@ -25,8 +26,10 @@
     padding: 8px 24px;
     border-radius: 16px;
     height: 100%;
+    overflow-y: auto;
+    flex: 2;
     & h1 {
-        margin: 8px 0;
+        margin:0;
     }
     & form {
         display: flex;
@@ -34,14 +37,12 @@
         gap: 8px;
         & div {
             display: flex;
-            width: 100%;
             & input {
                 width: 100%;
             }
         }
     }
-    overflow-y: auto;
-    flex: 2;
+    
 }
 
 .form_container {
@@ -83,5 +84,11 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 190px);
+}
+
+.filter {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
 }
