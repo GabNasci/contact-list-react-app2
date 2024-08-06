@@ -308,13 +308,13 @@ function App() {
             <Dialog
               header={selectedContact.name}
               visible={editVisible}
-              style={{ width: '200px', border: "2px solid #000", padding: "4px", backgroundColor: "#fff" }}
+              className={styles.dialog_container}
               onHide={closeEditForm}
             >
               <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
                 <div>
                   <input type="hidden" value={selectedContact.id} name='id' />
-                  <div>
+                  <div className={styles.dialog_form_container}>
                     <div>
                       <label htmlFor="name">Name: <span>*</span></label>
                       <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="write your name correctly." />
