@@ -5,7 +5,7 @@
     width: 100%;
     padding: 0;
     gap: 16px;
-    
+    overflow: hidden;
 }
 
 .container_create {
@@ -16,13 +16,15 @@
     & h1 {
         margin: 8px 0;
     }
+    overflow-y: auto;
+    flex: 1;
 }
 
 .container_search {
     background-color: white;
     padding: 8px 24px;
     border-radius: 16px;
-    height: 100vh;
+    height: 100%;
     & h1 {
         margin: 8px 0;
     }
@@ -38,15 +40,14 @@
             }
         }
     }
-
-    
+    overflow-y: auto;
+    flex: 2;
 }
 
 .form_container {
     display: flex;
     flex-direction: column;
     gap: 16px;
-
     & div {
         display: flex;
         flex-direction: column;
@@ -65,11 +66,8 @@
             border: 2px solid #6c6c6c;
             outline: none;
         }
-        
-        
     }
     & div {
-            
         & button {
             background-color: #499fea;
             color: white;
@@ -81,13 +79,9 @@
     }
 }
 
-.search_container {
-    
-}
-
 .results_container {
     display: flex;
     flex-direction: column;
-    
-    
+    overflow-y: auto;
+    height: calc(100vh - 150px);
 }
