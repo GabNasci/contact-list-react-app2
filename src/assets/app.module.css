@@ -9,8 +9,8 @@
 }
 
 .container_create {
-    background-color: white;
-    padding: 24px 24px;
+    background-color: rgb(241, 241, 241);
+    padding: 34px 24px;
     border-radius: 16px;
     height: 100%;
     overflow-y: auto;
@@ -161,7 +161,6 @@
                 padding: 8px 12px;
                 border: 0;
                 border-radius: 8px;
-
             }
 
         }

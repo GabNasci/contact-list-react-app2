@@ -293,9 +293,9 @@ function App() {
           {showingContacts.length ?
             showingContacts.map((item) => (
               <div className={styles.contact_card} key={item.id}>
-                <p>{item.name}</p>
-                <p>{item.phone}</p>
-                <p>{item.type}</p>
+                <p><strong>Nome: </strong> {item.name}</p>
+                <p><strong>Telefone: </strong> {item.phone}</p>
+                <p><strong>Tipo: </strong>{item.type}</p>
                 <div>
                   <button className={styles.edit_button} onClick={() => handleEditClick(item)}>Editar</button>
                   <button className={styles.delete_button} value={item.id} onClick={handleDelete}>X</button>
