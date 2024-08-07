@@ -10,8 +10,8 @@ export interface ContactInterface {
 
 export enum Type {
   All = "Todos",
-  Personal = "Personal",
-  Professional = "Professional"
+  Personal = "Pessoal",
+  Professional = "Profissional"
 }
 
 export enum Option {
