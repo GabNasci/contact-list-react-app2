@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { ContactInterface, Type, Option } from './interface/ContactInterface';
 import ContactController from './controller/ContactController';
@@ -7,130 +7,15 @@ import { contactSchema, ContactSchemaType } from './Schema/ContactSchema';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputMask } from 'primereact/inputmask';
+import { useMountEffect } from 'primereact/hooks';
+import { Messages } from 'primereact/messages';
 import styles from "../src/assets/app.module.css"
+import "primereact/resources/themes/lara-light-blue/theme.css"
 
 
 
 function App() {
-  const [contacts, setContacts] = useState<Array<ContactInterface>>([
-    {
-      id: 1,
-      name: "Alice Johnson",
-      phone: "(11) 98765-4321",
-      email: "alice.johnson@example.com",
-      address: "123 Main St, Springfield",
-      note: "Cliente regular",
-      type: "Personal"
-    },
-    {
-      id: 2,
-      name: "Bob Smith",
-      phone: "(21) 92345-6789",
-      email: "bob.smith@example.com",
-      address: "456 Elm St, Rivertown",
-      note: "Contato de negócios",
-      type: "Professional"
-    },
-    {
-      id: 3,
-      name: "Carol White",
-      phone: "(31) 99876-5432",
-      email: "carol.white@example.com",
-      address: "789 Oak St, Mountainview",
-      note: "Prefere comunicação via e-mail",
-      type: "Personal"
-    },
-    {
-      id: 4,
-      name: "David Brown",
-      phone: "(41) 91234-5678",
-      email: "david.brown@example.com",
-      address: "321 Pine St, Lakeside",
-      note: "Disponível apenas à tarde",
-      type: "Professional"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    },
-    {
-      id: 5,
-      name: "Eve Green",
-      phone: "(51) 98765-4321",
-      email: "eve.green@example.com",
-      address: "654 Cedar St, Hilltop",
-      note: "Precisa de suporte técnico",
-      type: "Personal"
-    }
-  ])
+  const [contacts, setContacts] = useState<Array<ContactInterface>>([])
 
   const [showingContacts, setShowingContacts] = useState<Array<ContactInterface>>(contacts)
   const [searchInput, setSearchInput] = useState<string>("")
@@ -138,6 +23,10 @@ function App() {
   const [filter, setFilter] = useState<string>(Type.All)
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [selectedContact, setSelectedContact] = useState<ContactInterface>();
+  const create_msgs = useRef<Messages>(null);
+  const edit_msgs = useRef<Messages>(null);
+
+
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<ContactInterface>({
     resolver: zodResolver(contactSchema)
@@ -157,6 +46,9 @@ function App() {
     const newArray = ContactController.deleteContact(contacts, parseInt(e.currentTarget.value))
     setContacts(newArray)
     setShowingContacts(ContactController.searchContact(newArray, option, searchInput, filter))
+    return create_msgs.current?.show(
+      { sticky: false, life: 2000, severity: 'success', summary: '', detail: 'Contato excluído!', closable: false },
+    );
   }
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -180,15 +72,28 @@ function App() {
   }
 
   const handleCreateForm = (data: ContactSchemaType) => {
-    if (ContactController.findDuplicate(contacts, data)) return alert('Contato já existe!')
+    if (ContactController.findDuplicate(contacts, data)) return create_msgs.current?.show(
+      { sticky: false, life: 2000, severity: 'warn', summary: '', detail: 'Contato já adicionado', closable: false },
+    );
     setContacts(ContactController.createContact(contacts, data))
     setShowingContacts(contacts)
+    return create_msgs.current?.show(
+      { sticky: false, life: 2000, severity: 'success', summary: 'Sucesso', detail: 'Contato adicionado', closable: false },
+    );
   }
 
 
   const handleEditForm = (data: ContactSchemaType) => {
-    if (ContactController.findDuplicateEdit(contacts, data, selectedContact?.id)) return alert('Contato já existe!')
-    console.log(ContactController.updateContact(contacts, data, selectedContact.id))
+    if (ContactController.findDuplicateEdit(contacts, data, selectedContact?.id)) return edit_msgs.current?.show(
+      { sticky: false, life: 2000, severity: 'warn', summary: '', detail: 'Contato já adicionado', closable: false },
+    );
+    if (selectedContact) ContactController.updateContact(contacts, data, selectedContact.id)
+    setEditVisible(false)
+    return create_msgs.current?.show(
+      { sticky: false, life: 2000, severity: 'success', summary: '', detail: 'Contato atualizado', closable: false },
+    );
+
+
   }
 
   const closeEditForm = () => {
@@ -206,14 +111,15 @@ function App() {
 
   return (
     <div className={styles.container}>
+      <Messages style={{ position: "absolute", right: "30px", top: "10px" }} ref={create_msgs} />
       <section className={styles.container_create}>
         <h1>Criação de Contatos</h1>
         <form className={styles.form_container} autoComplete="off" onSubmit={handleSubmit(handleCreateForm)} >
           <div className={styles.form_body}>
             <div>
               <label htmlFor="name">Nome: <span>*</span></label>
-              <input type="text" {...register('name')} required id="name" placeholder="write your name correctly." />
-              {errors.name && <p >{errors.name.message}</p>}
+              <input type="text" {...register('name')} required id="name" placeholder="Digite o nome do contato." />
+              {errors.name && <p className={styles.error}>{errors.name.message}</p>}
             </div>
             <div >
               <label htmlFor="phone">Telefone: <span>*</span></label>
@@ -229,30 +135,30 @@ function App() {
                   />
                 )}
               />
-              {errors.phone && <p >{errors.phone.message}</p>}
+              {errors.phone && <p className={styles.error}>{errors.phone.message}</p>}
             </div>
             <div>
               <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
-              <input type="email" {...register('email')} id="email" placeholder="write your email correctly." />
-              {errors.email && <p >{errors.email.message}</p>}
+              <input type="email" {...register('email')} id="email" placeholder="Digite um email válido." />
+              {errors.email && <p className={styles.error}>{errors.email.message}</p>}
             </div>
             <div>
               <label htmlFor="address">Endereço: </label>
-              <input type="text" {...register('address')} id="address" placeholder="write your address correctly." />
-              {errors.address && <p >{errors.address.message}</p>}
+              <input type="text" {...register('address')} id="address" placeholder="Digite um endereço." />
+              {errors.address && <p className={styles.error}>{errors.address.message}</p>}
             </div>
             <div>
               <label htmlFor="note">Notas: </label>
-              <input type="text" {...register('note')} id="note" placeholder="write your note correctly." />
-              {errors.note && <p >{errors.note.message}</p>}
+              <input type="text" {...register('note')} id="note" placeholder="Digite uma anotação para o contato." />
+              {errors.note && <p className={styles.error}>{errors.note.message}</p>}
             </div>
             <div>
               <label htmlFor="note">Tipo: </label>
-              <select defaultValue={"Personal"} {...register('type')} name="type" id="type">
-                <option value="Personal">Personal</option>
-                <option value="Professional">Professional</option>
+              <select defaultValue={Type.Personal} {...register('type')} name="type" id="type">
+                <option value={Type.Personal}>Pessoal</option>
+                <option value={Type.Professional}>Profissional</option>
               </select>
-              {errors.note && <p >{errors.note.message}</p>}
+              {errors.note && <p className={styles.error}>{errors.note.message}</p>}
             </div>
           </div>
           <div >
@@ -310,6 +216,8 @@ function App() {
               visible={editVisible}
               className={styles.dialog_container}
               onHide={closeEditForm}
+              resizable={false}
+              draggable={false}
             >
               <form autoComplete="off" onSubmit={handleEdit(handleEditForm)} >
                 <div>
@@ -317,8 +225,8 @@ function App() {
                   <div className={styles.dialog_form_container}>
                     <div>
                       <label htmlFor="name">Name: <span>*</span></label>
-                      <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="write your name correctly." />
-                      {errorsEdit.name && <p >{errorsEdit.name.message}</p>}
+                      <input defaultValue={selectedContact.name} type="text" {...registerEdit('name')} required id="name" placeholder="Digite o nome do contato." />
+                      {errorsEdit.name && <p className={styles.error}>{errorsEdit.name.message}</p>}
                     </div>
                     <div >
                       <label htmlFor="phone">Phone: <span>*</span></label>
@@ -335,37 +243,38 @@ function App() {
                           />
                         )}
                       />
-                      {errorsEdit.phone && <p >{errorsEdit.phone.message}</p>}
+                      {errorsEdit.phone && <p className={styles.error}>{errorsEdit.phone.message}</p>}
                     </div>
                     <div>
                       <label htmlFor="email">E-mail: <span className=" text-red-600">*</span></label>
-                      <input defaultValue={selectedContact.email} type="email" {...registerEdit('email')} id="email" placeholder="write your email correctly." />
-                      {errorsEdit.email && <p >{errorsEdit.email.message}</p>}
+                      <input defaultValue={selectedContact.email} type="email" {...registerEdit('email')} id="email" placeholder="Digite um email válido." />
+                      {errorsEdit.email && <p className={styles.error}>{errorsEdit.email.message}</p>}
                     </div>
                     <div>
                       <label htmlFor="address">Address: </label>
-                      <input defaultValue={selectedContact.address} type="text" {...registerEdit('address')} id="address" placeholder="write your address correctly." />
-                      {errorsEdit.address && <p >{errorsEdit.address.message}</p>}
+                      <input defaultValue={selectedContact.address} type="text" {...registerEdit('address')} id="address" placeholder="Digite um endereço." />
+                      {errorsEdit.address && <p className={styles.error}>{errorsEdit.address.message}</p>}
                     </div>
                     <div>
                       <label htmlFor="note">Note: </label>
-                      <input defaultValue={selectedContact.note} type="text" {...registerEdit('note')} id="note" placeholder="write your note correctly." />
-                      {errorsEdit.note && <p >{errorsEdit.note.message}</p>}
+                      <input defaultValue={selectedContact.note} type="text" {...registerEdit('note')} id="note" placeholder="Digite uma anotação para o contato." />
+                      {errorsEdit.note && <p className={styles.error}>{errorsEdit.note.message}</p>}
                     </div>
                     <div>
                       <label htmlFor="note">Type: </label>
                       <select defaultValue={selectedContact.type} {...registerEdit('type')} name="type" id="type">
-                        <option value="Personal">Personal</option>
-                        <option value="Professional">Professional</option>
+                        <option value={Type.Personal}>Pessoal</option>
+                        <option value={Type.Professional}>Profissional</option>
                       </select>
-                      {errorsEdit.type && <p >{errorsEdit.type.message}</p>}
+                      {errorsEdit.type && <p className={styles.error}>{errorsEdit.type.message}</p>}
                     </div>
                   </div>
                   <div >
-                    <button type="submit">Submit</button>
+                    <button className={styles.edit_button} type="submit">Salvar Alterações</button>
                   </div>
                 </div>
               </form>
+              <Messages style={{ position: "absolute", right: "100px", bottom: "-80px" }} ref={edit_msgs} />
             </Dialog>
           )}
         </div>
