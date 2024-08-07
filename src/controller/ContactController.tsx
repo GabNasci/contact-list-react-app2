@@ -11,8 +11,7 @@ function findDuplicate(contacts: Array<ContactInterface>, contact: ContactSchema
 function findDuplicateEdit(contacts: Array<ContactInterface>, contact: ContactSchemaType, id: number | undefined): boolean {
     return contacts.some((item) => {
         if(item.id === id ) return false
-        if(item.type === contact.type) return (item.email === contact.email || item.phone === contact.phone)
-            return (item.email === contact.email && item.phone === contact.phone)
+        return (item.email === contact.email || item.phone === contact.phone)
     } )
 }
 
